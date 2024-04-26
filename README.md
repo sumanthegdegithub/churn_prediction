@@ -6,3 +6,8 @@
 4. Activate venv with .\venv\Scripts\activate
 5. Initialize dvc with dvc init
 6. dvc add data/[data files]
+7. dvc add  all *.dvc files
+8. dvc remote add origin [https://dagshub.com/sumanthegdegithub/churn_prediction.dvc]
+9. dvc remote modify origin --local auth basic   
+10. dvc remote modify origin --local user sumanthegdegithub
+11. dvc remote modify origin --local password [password]
