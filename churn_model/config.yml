@@ -1,0 +1,49 @@
+# Package Overview
+package_name: churn_model
+
+#experiment name
+experiment_name: Churn_Prediction_1
+
+# Data Files
+training_data_file: train.csv
+
+# Variables
+# The variable we are attempting to predict (cnt)
+target: Exited
+
+pipeline_name: churn_model
+pipeline_save_file: churn_model_output_v
+
+# Features that will go inside processing pipeline
+features:
+  - CreditScore
+  - Geography
+  - Gender
+  - Age
+  - Tenure
+  - Balance
+  - NumOfProducts
+  - HasCrCard
+  - IsActiveMember       
+
+onehot_features:
+  - Geography
+  - Gender
+
+min_max_features:
+  - CreditScore
+  - Tenure
+  - NumOfProducts
+
+unused_fields:  # Features to drop before pipeline
+  - id
+  - CustomerId
+  - Surname
+  - EstimatedSalary
+  
+# Set train/test split
+test_size: 0.20
+
+# Set the random seed
+random_state: 42
+
