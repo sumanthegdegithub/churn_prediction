@@ -19,10 +19,19 @@ import optuna
 from config.core import PACKAGE_ROOT, config
 from pipeline import model_pipeline
 from processing.data_manager import load_dataset, save_pipeline, pre_pipeline_preparation
+import mlflow.pyfunc
+from mlflow import MlflowClient
 
+MLFLOW_TRACKING_URI='https://dagshub.com/sumanthegdegithub/churn_prediction.mlflow'
+client = MlflowClient(tracking_uri=MLFLOW_TRACKING_URI)
 
 import dagshub
-dagshub.init(repo_owner='sumanthegdegithub', repo_name='churn_prediction', mlflow=True)
+
+champion_model = mlflow.pyfunc.load_model(f"models:/{config.optuna_configuration.project}@{'champion'}")
+
+
+
+dagshub.init(repo_owner=config.optuna_configuration.repo_owner, repo_name=config.optuna_configuration.repo_name, mlflow=True)
 
 def get_or_create_experiment(experiment_name):
 
@@ -31,7 +40,7 @@ def get_or_create_experiment(experiment_name):
     else:
         return mlflow.create_experiment(experiment_name)
     
-experiment_id = get_or_create_experiment(config.app_config.experiment_name)
+experiment_id = get_or_create_experiment(config.optuna_configuration.experiment_name)
 mlflow.set_experiment(experiment_id=experiment_id)
 
 # read training data
@@ -47,15 +56,24 @@ X_train, X_test, y_train, y_test = train_test_split(
 def objective(trial):
     with mlflow.start_run(nested=True):
         params = {
-            'max_depth': trial.suggest_int('max_depth', 1, 9),
-            'learning_rate': trial.suggest_loguniform('learning_rate', 0.01, 1.0),
-            'n_estimators': trial.suggest_int('n_estimators', 50, 500),
-            'min_child_weight': trial.suggest_int('min_child_weight', 1, 10),
-            'gamma': trial.suggest_loguniform('gamma', 1e-8, 1.0),
-            'subsample': trial.suggest_loguniform('subsample', 0.01, 1.0),
-            'colsample_bytree': trial.suggest_loguniform('colsample_bytree', 0.01, 1.0),
-            'reg_alpha': trial.suggest_loguniform('reg_alpha', 1e-8, 1.0),
-            'reg_lambda': trial.suggest_loguniform('reg_lambda', 1e-8, 1.0),
+            'max_depth': trial.suggest_int('max_depth', config.optuna_configuration.max_depth[0], 
+                                           config.optuna_configuration.max_depth[1]),
+            'learning_rate': trial.suggest_loguniform('learning_rate', config.optuna_configuration.learning_rate[0], 
+                                           config.optuna_configuration.learning_rate[1]),
+            'n_estimators': trial.suggest_int('n_estimators', config.optuna_configuration.n_estimators[0], 
+                                           config.optuna_configuration.n_estimators[1]),
+            'min_child_weight': trial.suggest_int('min_child_weight', config.optuna_configuration.min_child_weight[0], 
+                                           config.optuna_configuration.min_child_weight[1]),
+            'gamma': trial.suggest_loguniform('gamma', config.optuna_configuration.gamma[0], 
+                                           config.optuna_configuration.gamma[1]),
+            'subsample': trial.suggest_loguniform('subsample', config.optuna_configuration.subsample[0], 
+                                           config.optuna_configuration.subsample[1]),
+            'colsample_bytree': trial.suggest_loguniform('colsample_bytree', config.optuna_configuration.colsample_bytree[0], 
+                                           config.optuna_configuration.colsample_bytree[1]),
+            'reg_alpha': trial.suggest_loguniform('reg_alpha', config.optuna_configuration.reg_alpha[0], 
+                                           config.optuna_configuration.reg_alpha[1]),
+            'reg_lambda': trial.suggest_loguniform('reg_lambda', config.optuna_configuration.reg_lambda[0], 
+                                           config.optuna_configuration.reg_lambda[1]),
             'eval_metric': 'mlogloss',
             'use_label_encoder': False
         }
@@ -72,10 +90,9 @@ def objective(trial):
         mlflow.log_params(params)
         mlflow.log_metric("accuracy", accuracy)
         
-        
         return accuracy
     
-run_name = 'first_run'
+run_name =config.optuna_configuration.run_name
     
     # Initiate the parent run and call the hyperparameter tuning child run logic
 with mlflow.start_run(experiment_id=experiment_id, run_name=run_name, nested=True):
@@ -84,7 +101,7 @@ with mlflow.start_run(experiment_id=experiment_id, run_name=run_name, nested=Tru
 
     # Execute the hyperparameter optimization trials.
     # Note the addition of the `champion_callback` inclusion to control our logging
-    study.optimize(objective, n_trials=30)
+    study.optimize(objective, n_trials=2)
 
     mlflow.log_params(study.best_params)
     mlflow.log_metric("best_acc", study.best_value)
@@ -92,10 +109,10 @@ with mlflow.start_run(experiment_id=experiment_id, run_name=run_name, nested=Tru
     # Log tags
     mlflow.set_tags(
         tags={
-            "project": "churn_prediction",
-            "optimizer_engine": "optuna",
-            "model_family": "xgboost",
-            "feature_set_version": 1,
+            "project": config.optuna_configuration.project,
+            "optimizer_engine": config.optuna_configuration.optimizer_engine,
+            "model_family": config.optuna_configuration.optimizer_engine,
+            "feature_set_version": config.optuna_configuration.feature_set_version,
         }
     )
 
@@ -108,15 +125,22 @@ with mlflow.start_run(experiment_id=experiment_id, run_name=run_name, nested=Tru
     # Evaluate predictions
     accuracy = accuracy_score(y_test, y_pred)
     # Log the residuals plot
-
-    artifact_path = "model"
+    artifact_path = config.optuna_configuration.artifact_path
 
     mlflow.sklearn.log_model(
         sk_model=pipe,
         artifact_path=artifact_path,
         input_example=X_train.iloc[[0]],
-        metadata={"model_data_version": 1},
+        metadata={"model_data_version": config.optuna_configuration.model_data_version},
+        registered_model_name = config.optuna_configuration.project,
     )
+    
+    latest_version = 0
+    for mv in client.search_model_versions(f"name='{config.optuna_configuration.project}'"):
+        if latest_version < int(dict(mv)['version']):
+            latest_version = int(dict(mv)['version'])
+            
+    client.set_registered_model_alias(config.optuna_configuration.project, "champion", str(latest_version))
 
     # Get the logged model uri so that we can load it from the artifact store
     model_uri = mlflow.get_artifact_uri(artifact_path)

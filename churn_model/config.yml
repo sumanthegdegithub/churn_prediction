@@ -1,9 +1,6 @@
 # Package Overview
 package_name: churn_model
 
-#experiment name
-experiment_name: Churn_Prediction_1
-
 # Data Files
 training_data_file: train.csv
 
@@ -47,3 +44,50 @@ test_size: 0.20
 # Set the random seed
 random_state: 42
 
+
+repo_owner: sumanthegdegithub
+repo_name: churn_prediction
+experiment_name: Churn_Prediction_1
+artifact_path: model
+model_data_version: 1
+run_name: first_run
+project: churn_prediction
+optimizer_engine: optuna
+model_family: xgboost
+feature_set_version: 1
+
+max_depth: 
+  - 1
+  - 9
+
+learning_rate: 
+  - 0.01 
+  - 1.0
+
+n_estimators: 
+  - 50
+  - 500
+
+min_child_weight: 
+  - 1
+  - 10
+
+gamma: 
+  - 0.0000001
+  - 1.0
+
+subsample: 
+  - 0.01 
+  - 1.0
+
+colsample_bytree: 
+  - 0.01
+  - 1.0
+
+reg_alpha: 
+  - 0.0000001
+  - 1.0
+
+reg_lambda: 
+  - 0.0000001
+  - 1.0

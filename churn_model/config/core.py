@@ -28,7 +28,6 @@ class AppConfig(BaseModel):
     training_data_file: str
     pipeline_name: str
     pipeline_save_file: str
-    experiment_name: str
 
 
 class ModelConfig(BaseModel):
@@ -45,13 +44,38 @@ class ModelConfig(BaseModel):
     
     test_size: float
     random_state: int
-
+    
+class OptunaConfig(BaseModel):
+    """
+    All configuration relevant to optuna
+    training.
+    """
+    repo_owner: str
+    repo_name: str
+    experiment_name: str
+    artifact_path: str
+    model_data_version: int
+    run_name: str
+    project: str
+    optimizer_engine: str
+    model_family: str
+    feature_set_version: int
+    max_depth: List[float]
+    learning_rate: List[float]
+    n_estimators: List[float]
+    min_child_weight: List[float]
+    gamma: List[float]
+    subsample: List[float]
+    colsample_bytree: List[float]
+    reg_alpha: List[float]
+    reg_lambda: List[float]
 
 class Config(BaseModel):
     """Master config object."""
 
     app_config: AppConfig
     model_configuration: ModelConfig
+    optuna_configuration: OptunaConfig
 
 
 def find_config_file() -> Path:
@@ -86,6 +110,7 @@ def create_and_validate_config(parsed_config: YAML = None) -> Config:
     _config = Config(
         app_config = AppConfig(**parsed_config.data),
         model_configuration = ModelConfig(**parsed_config.data),
+        optuna_configuration = OptunaConfig(**parsed_config.data)
     )
 
     return _config
