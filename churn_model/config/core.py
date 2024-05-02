@@ -28,6 +28,7 @@ class AppConfig(BaseModel):
     training_data_file: str
     pipeline_name: str
     pipeline_save_file: str
+    testing_data_file: str
 
 
 class ModelConfig(BaseModel):
@@ -69,6 +70,7 @@ class OptunaConfig(BaseModel):
     colsample_bytree: List[float]
     reg_alpha: List[float]
     reg_lambda: List[float]
+    mlflow_tracking_uri: str
 
 class Config(BaseModel):
     """Master config object."""

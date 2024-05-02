@@ -15,6 +15,7 @@ import mlflow
 from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
 import optuna
+optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 from config.core import PACKAGE_ROOT, config
 from pipeline import model_pipeline
@@ -22,13 +23,12 @@ from processing.data_manager import load_dataset, save_pipeline, pre_pipeline_pr
 import mlflow.pyfunc
 from mlflow import MlflowClient
 
-MLFLOW_TRACKING_URI='https://dagshub.com/sumanthegdegithub/churn_prediction.mlflow'
-client = MlflowClient(tracking_uri=MLFLOW_TRACKING_URI)
+client = MlflowClient(tracking_uri=config.optuna_configuration.mlflow_tracking_uri)
+mlflow.set_tracking_uri(config.optuna_configuration.mlflow_tracking_uri)
 
 import dagshub
 
 champion_model = mlflow.pyfunc.load_model(f"models:/{config.optuna_configuration.project}@{'champion'}")
-
 
 
 dagshub.init(repo_owner=config.optuna_configuration.repo_owner, repo_name=config.optuna_configuration.repo_name, mlflow=True)
@@ -45,6 +45,7 @@ mlflow.set_experiment(experiment_id=experiment_id)
 
 # read training data
 data = pre_pipeline_preparation(load_dataset(file_name = config.app_config.training_data_file))
+test_data = pre_pipeline_preparation(load_dataset(file_name = config.app_config.testing_data_file))
 
 X_train, X_test, y_train, y_test = train_test_split(
         data[config.model_configuration.features],     # predictors
@@ -140,8 +141,12 @@ with mlflow.start_run(experiment_id=experiment_id, run_name=run_name, nested=Tru
         if latest_version < int(dict(mv)['version']):
             latest_version = int(dict(mv)['version'])
             
-    client.set_registered_model_alias(config.optuna_configuration.project, "champion", str(latest_version))
+            
+    c_y_pred = champion_model.predict(X_test)
+    champion_accuracy = accuracy_score(y_test, c_y_pred)
+    print(f'Champion Accuracy {champion_accuracy} challenger Acuracy {accuracy}')
+    if accuracy > champion_accuracy: 
+        print('Setting challenger as new champion')
+        client.set_registered_model_alias(config.optuna_configuration.project, "champion", str(latest_version))
 
-    # Get the logged model uri so that we can load it from the artifact store
-    model_uri = mlflow.get_artifact_uri(artifact_path)
 

@@ -3,6 +3,7 @@ package_name: churn_model
 
 # Data Files
 training_data_file: train.csv
+testing_data_file: test.csv
 
 # Variables
 # The variable we are attempting to predict (cnt)
@@ -55,6 +56,7 @@ project: churn_prediction
 optimizer_engine: optuna
 model_family: xgboost
 feature_set_version: 1
+mlflow_tracking_uri: https://dagshub.com/sumanthegdegithub/churn_prediction.mlflow
 
 max_depth: 
   - 1
