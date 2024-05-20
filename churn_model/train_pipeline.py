@@ -1,25 +1,14 @@
-import numpy as np
-import pandas as pd
-from pathlib import Path
 import warnings
-import cmd
-import textwrap
 warnings.filterwarnings('ignore')
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.compose import ColumnTransformer
 import mlflow
 from sklearn.metrics import accuracy_score
-from xgboost import XGBClassifier
 import optuna
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 from config.core import PACKAGE_ROOT, config
 from pipeline import model_pipeline
-from processing.data_manager import load_dataset, save_pipeline, pre_pipeline_preparation
+from processing.data_manager import load_dataset, pre_pipeline_preparation
 import mlflow.pyfunc
 from mlflow import MlflowClient
 
@@ -148,5 +137,6 @@ with mlflow.start_run(experiment_id=experiment_id, run_name=run_name, nested=Tru
     if accuracy > champion_accuracy: 
         print('Setting challenger as new champion')
         client.set_registered_model_alias(config.optuna_configuration.project, "champion", str(latest_version))
+        
 
 
