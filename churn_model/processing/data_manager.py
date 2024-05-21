@@ -1,12 +1,16 @@
 import typing as t
 from pathlib import Path
+import sys
+file = Path(__file__).resolve()
+parent, root = file.parent, file.parents[1]
+sys.path.append(str(root))
 
 import joblib
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-#from churn_model import __version__ as _version
-_version = 1
+from churn_model import __version__ as _version
+
 from config.core import DATASET_DIR, TRAINED_MODEL_DIR, config
 
 
