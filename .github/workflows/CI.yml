@@ -28,6 +28,7 @@ jobs:
           python3 --version
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements/requirements.txt
+          dagshub login --token c1f3b949a72ed6aeedcd73c6614bf1ff4a185aa5
 
       - name: Model Training
         run: |
