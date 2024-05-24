@@ -26,16 +26,16 @@ jobs:
       - name: Install dependencies
         run: |
           python3 --version
-          python -m pip install --upgrade pip
-          Python -m venv venv
+          python3 -m pip install --upgrade pip
+          python3 -m venv venv
           ./venv/Scripts/activate
-          python -m pip install -r requirements/requirements.txt
+          python3 -m pip install -r requirements/requirements.txt
 
       - name: Model Training
         run: |
-          python bikeshare_model/train_pipeline.py
+          python3 churn_model/train_pipeline.py
 
       - name: Model Prediction
         run: |
-          python bikeshare_model/predict.py
+          python3 churn_model/predict.py
 
