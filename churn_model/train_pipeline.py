@@ -24,9 +24,9 @@ import dagshub
 
 champion_model = mlflow.pyfunc.load_model(f"models:/{config.optuna_configuration.project}@{'champion'}")
 
-
+print('before_dags_hub_initiation')
 dagshub.init(repo_owner=config.optuna_configuration.repo_owner, repo_name=config.optuna_configuration.repo_name, mlflow=True)
-
+print('after_dags_hub_initiation')
 def get_or_create_experiment(experiment_name):
 
     if experiment := mlflow.get_experiment_by_name(experiment_name):
