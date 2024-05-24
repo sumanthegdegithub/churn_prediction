@@ -27,8 +27,6 @@ jobs:
         run: |
           python3 --version
           python3 -m pip install --upgrade pip
-          python3 -m venv venv
-          ./venv/Scripts/activate
           python3 -m pip install -r requirements/requirements.txt
 
       - name: Model Training
