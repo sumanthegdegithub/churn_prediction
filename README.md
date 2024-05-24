@@ -12,4 +12,3 @@
 10. dvc remote modify origin --local user sumanthegdegithub
 11. dvc remote modify origin --local password [password]
 12.
-13.
