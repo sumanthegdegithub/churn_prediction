@@ -1,0 +1,40 @@
+name: Churn Prediction CI Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  train-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{matrix.python-version}}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+
+      - name: Install Dependencies
+          run: |
+            python3 -m pip install --upgrade pip
+            Python3 -m venv venv
+            ./venv/Scripts/activate
+            pip install -r requirements/requirements.txt
+
+      - name: Model Training
+        run: |
+          python3 bikeshare_model/train_pipeline.py
+
+      - name: Model Prediction
+        run: |
+            python3 bikeshare_model/predict.py
+
