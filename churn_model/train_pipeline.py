@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+file = Path(__file__).resolve()
+parent, root = file.parent, file.parents[1]
+sys.path.append(str(root))
 import warnings
 warnings.filterwarnings('ignore')
 from sklearn.model_selection import train_test_split
@@ -6,7 +11,7 @@ from sklearn.metrics import accuracy_score
 import optuna
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
-from config.core import PACKAGE_ROOT, config
+from churn_model.config.core import PACKAGE_ROOT, config
 from pipeline import model_pipeline
 from processing.data_manager import load_dataset, pre_pipeline_preparation
 import mlflow.pyfunc
@@ -129,7 +134,6 @@ with mlflow.start_run(experiment_id=experiment_id, run_name=run_name, nested=Tru
     for mv in client.search_model_versions(f"name='{config.optuna_configuration.project}'"):
         if latest_version < int(dict(mv)['version']):
             latest_version = int(dict(mv)['version'])
-            
             
     c_y_pred = champion_model.predict(X_test)
     champion_accuracy = accuracy_score(y_test, c_y_pred)

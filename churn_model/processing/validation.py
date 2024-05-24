@@ -19,7 +19,7 @@ def validate_inputs(*, input_df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[d
     """Check model inputs for unprocessable values."""
 
     pre_processed = pre_pipeline_preparation(data_frame = input_df)
-    validated_data = pre_processed[config.model_config.features].copy()
+    validated_data = pre_processed[config.model_configuration.features].copy()
     errors = None
 
     try:
@@ -34,15 +34,15 @@ def validate_inputs(*, input_df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[d
 
 
 class DataInputSchema(BaseModel):
-    CreditScore: Optional[float]
+    CreditScore: Optional[int]
     Geography: Optional[str]
     Gender: Optional[str]
     Age: Optional[float]
-    Tenure: Optional[float]
+    Tenure: Optional[int]
     Balance: Optional[float]
     NumOfProducts: Optional[int]
-    HasCrCard: Optional[int]
-    IsActiveMember: Optional[int]
+    HasCrCard: Optional[float]
+    IsActiveMember: Optional[float]
     
 
 

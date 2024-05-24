@@ -1,4 +1,9 @@
-from config.core import config
+import sys
+from pathlib import Path
+file = Path(__file__).resolve()
+parent, root = file.parent, file.parents[1]
+sys.path.append(str(root))
+from churn_model.config.core import config
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from sklearn.ensemble import RandomForestRegressor
@@ -36,4 +41,8 @@ class model_pipeline():
     def predict(self, X: pd.DataFrame):
         
         return self.pipe.predict(X)
+    
+    def predict_proba(self, X: pd.DataFrame):
+        
+        return self.pipe.predict_proba(X)
     

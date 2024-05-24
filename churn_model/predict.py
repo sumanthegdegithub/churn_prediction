@@ -26,10 +26,10 @@ def make_prediction(*, input_data: Union[pd.DataFrame, dict]) -> dict:
     """Make a prediction using a saved model """
     
     validated_data, errors = validate_inputs(input_df = pd.DataFrame(input_data))
-    validated_data = validated_data.reindex(columns = config.model_config.features)
+    validated_data = validated_data.reindex(columns = config.model_configuration.features)
     
     results = {"predictions": None, "version": _version, "errors": errors}
-      
+    
     if not errors:
         predictions = champion_model.predict(validated_data)
         results = {"predictions": np.floor(predictions), "version": _version, "errors": errors}
