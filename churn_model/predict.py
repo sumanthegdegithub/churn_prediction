@@ -41,6 +41,6 @@ def make_prediction(*, input_data: Union[pd.DataFrame, dict]) -> dict:
 if __name__ == "__main__":
 
     data_in = {'CreditScore': [668], 'Geography': ['France'], 'Gender': ['Male'], 'Age': [33.0], 'Tenure': [3],
-               'Balance': [0], 'NumOfProducts': [2], 'HasCrCard': [1], 'IsActiveMember': [0]}
+               'Balance': [0.0], 'NumOfProducts': [2], 'HasCrCard': [1], 'IsActiveMember': [0]}
 
     make_prediction(input_data = data_in)
