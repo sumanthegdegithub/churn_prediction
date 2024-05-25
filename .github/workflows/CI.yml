@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.12"]
 
     steps:
       - name: Checkout Repository
@@ -28,7 +28,7 @@ jobs:
           python3 --version
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements/requirements.txt
-          dagshub login --token c1f3b949a72ed6aeedcd73c6614bf1ff4a185aa5
+          dagshub login --token ${{secrets.DAGSHUB_USER_TOKEN}}
           echo "Logged into dagshub"
           dvc pull -v
 
@@ -40,4 +40,41 @@ jobs:
       - name: Model Prediction
         run: |
           python3 churn_model/predict.py
+
+  build-package-and-containerize:
+    runs-on: ubuntu-latest
+    strategy:
+        fail-fast: false
+        matrix:
+          python-version: ["3.12"]
+
+    needs: train-and-test
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{matrix.python-version}}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+          docker: latest
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements/requirements.txt
+
+      - name: Build and Package
+        run: |
+          python -m pip install build
+          python -m build
+
+      - name: Log in to Docker Hub
+        run: docker login -u ${{secrets.DOCKERHUB_USERNAME}} -p ${{secrets.DOCKERHUB_PASSWORD}}
+
+      - name: Build and push
+        run: |
+            COMMIT_SHA=$(git rev-parse --short=7 HEAD)
+            docker build -t sumanthegdedocker/churn_model_api:$COMMIT_SHA .
+            docker push sumanthegdedocker/churn_model_api:$COMMIT_SHA
 
