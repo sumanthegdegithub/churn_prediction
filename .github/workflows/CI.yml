@@ -1,4 +1,4 @@
-name: Churn Prediction CI Pipeline
+name: CI Pipeline
 
 on:
   push:
