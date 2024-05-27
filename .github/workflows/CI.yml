@@ -75,6 +75,6 @@ jobs:
       - name: Build and push
         run: |
             COMMIT_SHA=$(git rev-parse --short=7 HEAD)
-            docker build -t sumanthegdedocker/churn_model_api:$COMMIT_SHA .
-            docker push sumanthegdedocker/churn_model_api:$COMMIT_SHA
+            docker build -t sumanthegdedocker/churn_model_api:latest .
+            docker push sumanthegdedocker/churn_model_api:latest
 

@@ -16,9 +16,7 @@ jobs:
         - name: Pull Docker Image
           env:
             DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
-          run: |
-            COMMIT_SHA=$(git rev-parse --short=7 HEAD)
-            sudo docker pull sumanthegdedocker/churn_model_api:$COMMIT_SHA
+          run: sudo docker pull sumanthegdedocker/churn_model_api:latest
   
         - name: Delete Old Docker Container
           run: sudo docker rm -f churn_model_api-container || true
@@ -26,4 +24,4 @@ jobs:
         - name: Run Docker Container
           env:
             DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
-          run: sudo docker run -it -d -p 8001:8001 --name churn_model_api-container sumanthegdedocker/churn_model_api:$COMMIT_SHA
+          run: sudo docker run -it -d -p 8001:8001 --name churn_model_api-container sumanthegdedocker/churn_model_api:latest
