@@ -13,3 +13,11 @@
 11. dvc remote modify origin --local password [password]
 12.
 13.
+Traceback (most recent call last):
+  File "/app/app/main.py", line 12, in <module>
+    from app.api import api_router
+  File "/app/app/api.py", line 13, in <module>
+    from churn_model import __version__ as model_version
+  File "/usr/local/lib/python3.12/site-packages/churn_model/__init__.py", line 1, in <module>
+    from churn_model.config.core import parent, config
+ModuleNotFoundError: No module named 'churn_model.config'
