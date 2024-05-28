@@ -1,10 +1,10 @@
-uvicorn>=0.16.0,<0.18.0
-fastapi>=0.64.0,<1.0.0
+uvicorn
+fastapi
 pydantic #>=1.8.1,<2.0.0
 requests
 
 # testing requirements
-pytest>=6.2.3,<6.3.0
+pytest
 
 # repo maintenance tooling 
 #black>=22.0.0,<23.0.0
