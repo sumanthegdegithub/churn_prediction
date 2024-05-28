@@ -13,7 +13,6 @@ RUN ls -lrth && pwd
 
 # COPY ../dist/churn_model-0.0.1-py3-none-any.whl churn_model-0.0.1-py3-none-any.whl
 COPY dist/churn_model-0.0.1-py3-none-any.whl churn_model-0.0.1-py3-none-any.whl
-RUN pip install churn_model-0.0.1-py3-none-any.whl --force-reinstall
 
 COPY api/requirements.txt requirements.txt
 
