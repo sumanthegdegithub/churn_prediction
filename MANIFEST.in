@@ -4,7 +4,7 @@ include *.pkl
 recursive-include ./churn_model *
 recursive-include ./data *
 recursive-include ./requirements *
-recursive-include ./churn_model/config *
+include ./churn_model/config/core.py
 
 exclude *.log
 exclude *.cfg
